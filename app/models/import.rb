@@ -108,7 +108,7 @@ class Import < ActiveRecord::Base
       begin
         parse
       rescue NameError => e
-       import_errors << "There was an error parsing your import file. #{e.message}"
+       import_errors << "There was an error parsing your import file. #{e.inspect}"
       rescue CSV::IllegalFormatError => e
         import_errors << "There was an error parsing your import file. Your import file is not a valid CSV file."      
       rescue REXML::ParseException => e
