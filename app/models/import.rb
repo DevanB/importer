@@ -60,6 +60,7 @@ class Import < ActiveRecord::Base
     self.adds[type] += 1
     self.adds_will_change!
     save
+    RAILS_DEFAULT_LOGGER.info "Added the #{adds[type]} #{type}"
   end
   
   def guessed(type) 
@@ -108,6 +109,7 @@ class Import < ActiveRecord::Base
       begin
         parse
       rescue NameError => e
+        RAILS_DEFAULT_LOGGER.info "Encountered a NameError: \n#{e.message}\n#{e.backtrace}"
        import_errors << "There was an error parsing your import file. #{e.inspect}"
       rescue CSV::IllegalFormatError => e
         import_errors << "There was an error parsing your import file. Your import file is not a valid CSV file."      
