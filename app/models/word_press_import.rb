@@ -73,6 +73,8 @@ class WordPressImport < Import
       end
     end
 
+    blog.title = "#{ShopifyAPI::Shop.current.name} blog" if blog.title.blank?
+    
     blog.save    
     articles.each do |a|  
       current_saved_date = a.published_at
