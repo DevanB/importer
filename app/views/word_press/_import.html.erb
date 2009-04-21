@@ -1,15 +1,15 @@
-<script type="text/javascript" charset="utf-8">
-
-  function requestStatus() {
-    executer.stop();
-    new Ajax.Request('/word_press/poll', {method:'get', evalScripts:true, parameters: 'import_id=<%= @import.id %>&format=js' })
-  }
-
-  var executer = new PeriodicalExecuter(requestStatus, 15);
-
-</script>
-
 <div id="confirm" class="light">
+  <script type="text/javascript" charset="utf-8">
+
+    function requestStatus() {
+      executer.stop();
+      new Ajax.Request('/word_press/poll', {method:'get', evalScripts:true, parameters: 'import_id=<%= @import.id %>&format=js' })
+    }
+
+    var executer = new PeriodicalExecuter(requestStatus, 15);
+
+  </script>
+
   <% if @import && !@import.finished? %>  
     <h2 class="green">
       <span class="message">Import in Progress </span>

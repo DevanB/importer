@@ -46,7 +46,7 @@ class EbayController < ApplicationController
     
     respond_to do |format|
       format.html { redirect_to root_path }
-      format.js { render :partial => '/common/import' }
+      format.js { render(:update) { |page| page['confirm'].replace :partial => '/ebay/import' } }
     end
     
     rescue Ebay::RequestError => e
@@ -57,7 +57,7 @@ class EbayController < ApplicationController
     @import = EbayImport.find(params[:import_id])
 
     respond_to do |format|
-      format.js { render :partial => '/common/import' }
+      format.js { render(:update) { |page| page['confirm'].replace :partial => '/ebay/import' } }
     end
   end
   

@@ -44,7 +44,5 @@ class EbayControllerTest < ActionController::TestCase
     assert_difference "Delayed::Job.count" do
       post :import, :format => 'js'
     end
-    
-    assert_select_rjs :replace, 'confirm'
   end
 end

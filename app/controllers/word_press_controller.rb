@@ -32,10 +32,9 @@ class WordPressController < ApplicationController
   end
 
   def import
+    # Find the import job 
     begin
-      # Find the import job 
       @import = WordPressImport.find(params[:id])
-      
       raise ActiveRecord::RecordNotFound if @import.shop_url != current_shop.url
 
       @import.update_attribute :submitted_at, Time.now
@@ -46,16 +45,16 @@ class WordPressController < ApplicationController
     
     respond_to do |format|
       format.html { redirect_to :controller => 'dashboard', :action => 'index' }
-      format.js { render :partial => '/os_commerce/import' }
+      format.js do
+        render(:update) { |page| page['confirm'].replace :partial => 'import' }
+      end
     end
   end
   
   def poll
     @import = WordPressImport.find(params[:import_id])
 
-    respond_to do |format|
-      format.js { render :partial => 'os_commerce/import' }
-    end
+    render(:update) { |page| page['confirm'].replace :partial => 'import' }
   end
   
 end

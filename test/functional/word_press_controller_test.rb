@@ -4,6 +4,7 @@ class WordPressControllerTest < ActionController::TestCase
   
   def setup
     ShopifyAPI::Blog.stubs(:comments_enabled?).returns(true)
+    Import.stubs(:email_address).returns('shop@shopify.com')
 
     ShopifyAPI::Page.stubs(:save).returns(true)
     

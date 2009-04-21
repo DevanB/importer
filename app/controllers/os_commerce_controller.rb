@@ -49,7 +49,8 @@ class OsCommerceController < ApplicationController
     
     respond_to do |format|
       format.html { redirect_to :controller => 'dashboard', :action => 'index' }
-      format.js { render :partial => '/common/import' }
+
+      format.js { render(:update) { |page| page['confirm'].replace :partial => '/os_commerce/import' } }
     end
   end
   
@@ -57,8 +58,7 @@ class OsCommerceController < ApplicationController
     @import = OsCommerceImport.find(params[:import_id])
 
     respond_to do |format|
-      format.js { render :partial => '/common/import' }
+      format.js { render(:update) { |page| page['confirm'].replace :partial => '/os_commerce/import' } }
     end
   end
-  
 end
