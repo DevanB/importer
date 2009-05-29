@@ -1,5 +1,6 @@
 class EbayAccountController < ApplicationController
   skip_before_filter :load_ebay_account
+  around_filter :shopify_session
   
   # Testing
   # RUNAME = "jadedPixel-jadedPix-71b0-4-cwyqdsoqv"
