@@ -6,6 +6,7 @@ class AddDelayedJobsTable < ActiveRecord::Migration
       table.text     :handler
       table.string   :last_error
       table.datetime :run_at
+      table.datetime :failed_at
       table.datetime :locked_at
       table.string   :locked_by
       table.timestamps
