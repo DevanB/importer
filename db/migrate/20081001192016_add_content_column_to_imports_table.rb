@@ -1,6 +1,6 @@
 class AddContentColumnToImportsTable < ActiveRecord::Migration
   def self.up
-    add_column :imports, 'content', :text, :limit => 2147483647
+    add_column :imports, 'content', :text
   end
 
   def self.down
