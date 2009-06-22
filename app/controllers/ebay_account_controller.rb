@@ -6,7 +6,7 @@ class EbayAccountController < ApplicationController
   # RUNAME = "jadedPixel-jadedPix-71b0-4-cwyqdsoqv"
   
   # Production
-  RUNAME = "jadedPixel-jadedPix-45d6-4-nacpk"
+  RUNAME = "jadedPixel-jadedPix-45d6-4-slbjwxk"
   def index
     # Testing
     # redirect_to "https://signin.sandbox.ebay.com/ws/eBayISAPI.dll?SignIn&runame=#{RUNAME}"    
