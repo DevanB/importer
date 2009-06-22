@@ -34,13 +34,7 @@ class EbayController < ApplicationController
     end
 
     rescue Ebay::RequestError => e
-      RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.inspect}"
-      RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.to_s}"
-      RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.methods}"
-      
-      # RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.short_message if e.short_message}"
-      # RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.long_message}"
-      # RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.error_code}"
+      RAILS_DEFAULT_LOGGER.info "====errors are #{e.errors.collect(&:long_message).join('  ')}"
       @err = e    
   end
   
