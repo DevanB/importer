@@ -3,6 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  before_filter :redirect_shopifyapps_to_heroku
 
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
@@ -16,6 +17,12 @@ class ApplicationController < ActionController::Base
   # This allows text helpers to be used in flash messages
   def help
     Helper.instance
+  end
+  
+  def redirect_shopifyapps_to_heroku
+    if request.domain =~ /shopifyapps/
+      redirect_to "http://importer.heroku.com#{request.request_uri}"
+    end
   end
     
   class Helper
