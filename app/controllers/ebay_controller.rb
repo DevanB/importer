@@ -34,6 +34,7 @@ class EbayController < ApplicationController
     end
 
     rescue Ebay::RequestError => e
+      RAILS_DEFAULT_LOGGER.info "error from ebay: #{e.inspect}"
       @err = e    
   end
   
