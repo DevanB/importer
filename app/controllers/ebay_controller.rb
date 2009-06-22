@@ -33,9 +33,9 @@ class EbayController < ApplicationController
       format.js { }
     end
 
-    rescue Ebay::RequestError => e
+    rescue Ebay::RequestError => e  
       RAILS_DEFAULT_LOGGER.info "====errors are #{e.errors.collect(&:long_message).join('  ')}"
-      @err = e    
+      flash[:error] = e.errors.collect(&:long_message).join("\n")
   end
   
   def import
