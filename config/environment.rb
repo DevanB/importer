@@ -11,6 +11,15 @@ RAILS_GEM_VERSION = '2.2.2' unless defined? RAILS_GEM_VERSION
 require File.join(File.dirname(__FILE__), 'boot')
 
 Rails::Initializer.run do |config|
+
+  config.action_mailer.smtp_settings = {
+    :tls => true,
+    :address => "smtp.gmail.com",
+    :port => "587",
+    :authentication => :plain,
+    :user_name => ENV['gmail_user'],
+    :password => ENV['gmail_pass']
+  }
   
   config.load_paths += [RAILS_ROOT + '/vendor/xml-mapping/lib']
   
@@ -39,3 +48,5 @@ Rails::Initializer.run do |config|
     end
   end
 end
+
+ExceptionNotifier.exception_recipients = [ENV['exception_recipients']]
