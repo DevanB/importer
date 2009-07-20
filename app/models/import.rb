@@ -48,7 +48,8 @@ class Import < ActiveRecord::Base
       
       # Gets rid of a REXML exception, in my experience, this tag is always empty
       content.gsub!('<excerpt:encoded><![CDATA[]]></excerpt:encoded>', '')
-      self.content = content
+      utf8_content = Iconv.iconv("UTF-8", "ISO-8859-1", content).first 
+      self.content = utf8_content
     else
       nil
     end

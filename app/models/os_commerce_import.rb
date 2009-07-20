@@ -56,7 +56,7 @@ class OsCommerceImport < Import
       add_product(row)
     end
   end
-
+  
   def save_data
     # save each builder
     builders.each do |builder|
