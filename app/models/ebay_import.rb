@@ -51,6 +51,9 @@ class EbayImport < Import
       # email
       SummaryMailer.deliver_summary(base_url, email_recipient, mail_message)
     end
+    
+  rescue StandardError => e
+    ExceptionNotifier.deliver_non_controller_exception_notification(e)
   end
 
   def build_item(item)

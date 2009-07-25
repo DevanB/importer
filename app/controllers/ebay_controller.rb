@@ -76,6 +76,7 @@ class EbayController < ApplicationController
   end
 
   rescue_from Ebay::RequestError do |e|    
+    ExceptionNotifier.deliver_non_controller_exception_notification(e)
     render :text => "<h1>Ebay error</h1>\n\n" + e.errors.collect(&:long_message).join("<br/>\n")
   end  
 end
