@@ -3,7 +3,7 @@ class AdminController < ApplicationController
   before_filter :load_import, :except => :index
   
   def index
-    @imports = Import.find(:all)
+    @imports = Import.find(:all, :order => 'id DESC')
   end
   
   def content
