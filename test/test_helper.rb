@@ -10,8 +10,7 @@ class Test::Unit::TestCase
 
   # Add more helper methods to be used by all tests here...  
   def set_shopify_session
-    get 'login/finalize'
-    session['shopify'] = ShopifyAPI::Session.new("localhost")
+    @request.session['shopify'] = ShopifyAPI::Session.new("localhost")
   end
   
   def set_ebay_session

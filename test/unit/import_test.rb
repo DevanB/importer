@@ -63,6 +63,15 @@ class ImportTest < ActiveSupport::TestCase
     @import.finish_time = finish
     assert_equal finish, @import.finish_time
   end
+  
+  def test_should_finish_if_error_is_thrown
+    @import.stubs(:parse).raises(StandardError, 'problem')
+    
+    assert_nil @import.finish_time
+    @import.execute!('localhost', 'bill@bob.com')
+    assert @import.reload.finish_time
+    assert @import.finished?
+  end
     
   def test_shop_url_should_be_protected
     @import = WordPressImport.new(:shop_url => 'test', :content => 'test')

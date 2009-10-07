@@ -10,10 +10,11 @@ class EbayImportTest < ActiveSupport::TestCase
   end
   
   test "execute should run everything" do
-    @import.expects(:parse_and_save_data).times(1)
+    @import.expects(:parse)
+    @import.expects(:save_data)
 
     assert_difference "ActionMailer::Base.deliveries.size" do
-      assert @import.execute!('user:pass.shopify.myshopify.com', 'shop@shopify.com')
+      @import.execute!('user:pass.shopify.myshopify.com', 'shop@shopify.com')
     end
 
     assert_equal ['shop@shopify.com'], ActionMailer::Base.deliveries.first.to

@@ -21,40 +21,6 @@
 
 class EbayImport < Import
   belongs_to :ebay_account
-  
-  # Put it all together !
-  def execute!(site, email_recipient)
-    
-    if self.start_time.blank? # guard against executing the job multiple times
-    
-      # initialize
-      ShopifyAPI::Product.superclass.site = site # this is for DJ, it can't seem to find the site at execution time unless (perhaps because it comes from session[:shopify] ?)
-      self.start_time = Time.now
-      
-      # parse and save data
-      begin
-        parse_and_save_data
-      rescue REXML::ParseException => e
-        self.import_errors << "There was an error parsing your import file. Your import file is not a valid XML file."      
-      rescue ActiveResource::ResourceNotFound => e
-        self.import_errors << "Error importing your shop. Some data could not be saved."
-      rescue ActiveResource::ServerError => e
-        self.import_errors << "Error importing your shop. Some data could not be saved."
-      rescue ActiveResource::ClientError => e
-        self.import_errors << "So far, you have imported #{adds['product'] || 0} products. This seems to be the maximum number of allowed products for your subscription plan. Please <a href='http://#{shop_url}/admin/accounts/'>upgrade your subscription</a> to allow for more products."
-      end
-      
-      # wrap it up
-      self.finish_time = Time.now
-      self.save
-      
-      # email
-      SummaryMailer.deliver_summary(base_url, email_recipient, mail_message)
-    end
-    
-  rescue StandardError => e
-    ExceptionNotifier.deliver_non_controller_exception_notification(e)
-  end
 
   def build_item(item)
     builder = ProductBuilder.new(
@@ -88,16 +54,10 @@ class EbayImport < Import
     end
   end
   
-  private 
-  
-  def images_for(item)
-    # multiple images?
-
-    return if item.picture_details.picture_url.blank?
-    ShopifyAPI::Image.new(:src => item.picture_details.picture_url)
+  def parse
   end
   
-  def parse_and_save_data
+  def save_data
     current_page = 1
 
     begin
@@ -116,6 +76,14 @@ class EbayImport < Import
     end while response.active_list.pagination_result.total_number_of_pages > current_page
     
     list_items
+  end
+  
+  private 
+  def images_for(item)
+    # multiple images?
+
+    return if item.picture_details.picture_url.blank?
+    ShopifyAPI::Image.new(:src => item.picture_details.picture_url)
   end
   
   def EbayImport.get_item_description(item)

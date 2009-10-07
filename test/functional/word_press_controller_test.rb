@@ -23,7 +23,7 @@ class WordPressControllerTest < ActionController::TestCase
   end
      
   def test_should_redirect_to_login_if_no_session
-    session['shopify'] = nil
+    @request.session['shopify'] = nil
     actions = [:index, :create, :new, :import]
     for action in actions
     get action

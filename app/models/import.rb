@@ -123,9 +123,10 @@ class Import < ActiveRecord::Base
   rescue ActiveResource::ClientError => e
     import_errors << "So far, you have imported #{adds['product'] || 0} products. This seems to be the maximum number of allowed products for your subscription plan. Please <a href='http://#{shop_url}/admin/accounts/'>upgrade your subscription</a> to allow for more products."
   rescue StandardError => e
-    import_errors << "There was a problem with your import. The error message was: #{e.message}"
+    ExceptionNotifier.deliver_non_controller_exception_notification(e)
+    import_errors << "There was a problem with your import. The error message was: #{e.message}. Debugging information to follow: #{e.backtrace}"
   ensure
-    finish_time = Time.now if finish_time.blank?
+    self.finish_time = Time.now if finish_time.blank?
     save
 
     SummaryMailer.deliver_summary(base_url, email_recipient, mail_message)
