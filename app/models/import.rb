@@ -101,41 +101,34 @@ class Import < ActiveRecord::Base
   # Put it all together !
   def execute!(site, email_recipient)
     if self.start_time.blank? # guard against executing the job multiple times
-    
       # initialize
       ShopifyAPI::Product.superclass.site = site # this is for DJ, it can't seem to find the site at execution time unless (perhaps because it comes from session[:shopify] ?)
       self.start_time = Time.now
-      
-      # parse data
-      begin
-        parse
-      rescue NameError => e
-        RAILS_DEFAULT_LOGGER.info "Encountered a NameError: \n#{e.message}\n#{e.backtrace}"
-       import_errors << "There was an error parsing your import file. #{e.inspect}"
-      rescue CSV::IllegalFormatError => e
-        import_errors << "There was an error parsing your import file. Your import file is not a valid CSV file."      
-      rescue REXML::ParseException => e
-        import_errors << "There was an error parsing your import file. Your import file is not a valid XML file."      
-      end
     
-      # save data
-      begin
-        save_data
-      rescue ActiveResource::ResourceNotFound => e
-        import_errors << "Error importing your shop. Some data could not be saved."
-      rescue ActiveResource::ServerError => e
-        import_errors << "Error importing your shop. Some data could not be saved."
-      rescue ActiveResource::ClientError => e
-        import_errors << "So far, you have imported #{adds['product'] || 0} products. This seems to be the maximum number of allowed products for your subscription plan. Please <a href='http://#{shop_url}/admin/accounts/'>upgrade your subscription</a> to allow for more products."
-      end
-      
-      # wrap it up
-      self.finish_time = Time.now
-      self.save
-      
-      # email
-      SummaryMailer.deliver_summary(base_url, email_recipient, mail_message)
+      parse
+      save_data
     end
+    
+  rescue NameError => e
+    RAILS_DEFAULT_LOGGER.info "Encountered a NameError: \n#{e.message}\n#{e.backtrace}"
+   import_errors << "There was an error parsing your import file. #{e.inspect}"
+  rescue CSV::IllegalFormatError => e
+    import_errors << "There was an error parsing your import file. Your import file is not a valid CSV file."      
+  rescue REXML::ParseException => e
+    import_errors << "There was an error parsing your import file. Your import file is not a valid XML file."      
+  rescue ActiveResource::ResourceNotFound => e
+    import_errors << "Error importing your shop. Some data could not be saved."
+  rescue ActiveResource::ServerError => e
+    import_errors << "Error importing your shop. Some data could not be saved."
+  rescue ActiveResource::ClientError => e
+    import_errors << "So far, you have imported #{adds['product'] || 0} products. This seems to be the maximum number of allowed products for your subscription plan. Please <a href='http://#{shop_url}/admin/accounts/'>upgrade your subscription</a> to allow for more products."
+  rescue StandardError => e
+    import_errors << "There was a problem with your import. The error message was: #{e.message}"
+  ensure
+    finish_time = Time.now if finish_time.blank?
+    save
+
+    SummaryMailer.deliver_summary(base_url, email_recipient, mail_message)
   end
   
   # class methods

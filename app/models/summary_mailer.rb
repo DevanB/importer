@@ -3,6 +3,6 @@ class SummaryMailer < ActionMailer::Base
     from       ENV['from_address']
     recipients recipient
     subject    "[#{url}] Batch import completed"
-    body       "Importer successfully completed your import. \n\n#{message}"
+    body       "Importer completed your import. \n\n#{message}"
   end
 end
