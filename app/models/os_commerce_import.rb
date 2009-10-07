@@ -66,11 +66,6 @@ class OsCommerceImport < Import
         self.import_errors << builder.errors
       end
     end
-
-    rescue StandardError => e
-      RAILS_DEFAULT_LOGGER.debug "Exception: #{e.message}"
-      RAILS_DEFAULT_LOGGER.debug "Backtrace: #{e.backtrace}"
-      self.import_errors << "There was an error saving a product."
   end    
 
   private  
