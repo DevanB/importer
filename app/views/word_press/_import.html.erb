@@ -18,7 +18,7 @@
     <p class="note">
       Your import job was submitted at <%= @import.submitted_at.to_s(:long) %> and is currently being processed, we will send you an email once the job has finished.
     </p>
-    <p class="note">Your shop is currently being imported...</p>
+    <p class="note">Your blog is currently being imported...</p>
   <% elsif @import && @import.finished? %>
     <h2 class="green">
       <span class="message">Import Completed </span>
