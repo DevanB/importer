@@ -21,7 +21,7 @@ class ImportTest < ActiveSupport::TestCase
     hashes = [@import.adds, @import.guesses]
     
     hashes.each do |hash|
-      assert_equal nil, hash
+      assert_equal Hash.new, hash
     end
     
     @import.added('post')
@@ -79,5 +79,13 @@ class ImportTest < ActiveSupport::TestCase
     
     @import.shop_url = 'test'
     assert @import.save
+  end
+  
+  def test_adds_should_have_sensible_default
+    @import = WordPressImport.new(:shop_url => 'test', :content => 'test')
+    @import.shop_url = 'test'
+    assert @import.save
+    assert_equal(Hash.new, @import.adds)
+    assert_equal(Hash.new, @import.guesses)
   end
 end

@@ -36,6 +36,8 @@ class Import < ActiveRecord::Base
   
   def init_serials
     self.import_errors = []
+    self.adds = {}
+    self.guesses = {}
   end
   
   def source=(file_data)
@@ -56,7 +58,6 @@ class Import < ActiveRecord::Base
   end
   
   def added(type)
-    self.adds ||= {}
     self.adds[type] ||= 0
     self.adds[type] += 1
     self.adds_will_change!
@@ -65,7 +66,6 @@ class Import < ActiveRecord::Base
   end
   
   def guessed(type) 
-    self.guesses ||= {}
     self.guesses[type] ||= 0
     self.guesses[type] += 1
     self.guesses_will_change!
