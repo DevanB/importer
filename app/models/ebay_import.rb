@@ -74,8 +74,6 @@ class EbayImport < Import
     
       current_page += 1
     end while response.active_list.pagination_result.total_number_of_pages > current_page
-    
-    list_items
   end
   
   private 
