@@ -165,5 +165,11 @@ class Import < ActiveRecord::Base
   
   def guess 
   end
-    
+  
+  before_save :delete_content_if_finished
+  def delete_content_if_finished
+    if finished? && content.present?
+      update_attribute :content, nil
+    end
+  end
 end

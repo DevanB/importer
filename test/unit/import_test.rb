@@ -88,4 +88,19 @@ class ImportTest < ActiveSupport::TestCase
     assert_equal(Hash.new, @import.adds)
     assert_equal(Hash.new, @import.guesses)
   end
+  
+  def test_delete_content_after_finished
+    @import = WordPressImport.new(:shop_url => 'test', :content => 'test')
+    @import.shop_url = 'test'
+    assert @import.save
+    
+    assert !@import.finished?
+    assert @import.content
+    
+    @import.finish_time = Time.now
+    @import.save!
+    
+    assert @import.finished?
+    assert_nil @import.reload.content
+  end
 end
