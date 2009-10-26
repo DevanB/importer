@@ -1,1 +1,1 @@
-<%= @import.import_errors unless @import.import_errors.blank? %>
+<%= CGI.escapeHTML(@import.import_errors) unless @import.import_errors.blank? %>

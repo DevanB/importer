@@ -168,7 +168,7 @@ class Import < ActiveRecord::Base
   
   before_save :delete_content_if_finished
   def delete_content_if_finished
-    if finished? && content.present?
+    if finished? && content.present? && import_errors.blank?
       update_attribute :content, nil
     end
   end
