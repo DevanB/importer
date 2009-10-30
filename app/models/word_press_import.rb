@@ -99,7 +99,7 @@ class WordPressImport < Import
   
   private  
   def xml
-    @xml ||= REXML::Document.new(self.content)    
+    @xml ||= REXML::Document.new(self.content.gsub(' & ', ' &amp; '))    
   end
   
   def pages
