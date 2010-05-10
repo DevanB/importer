@@ -3,20 +3,13 @@ require 'test_helper'
 class ImportTest < ActiveSupport::TestCase
   
   def setup
-    @import = WordPressImport.new(:content => File.read(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml'))
+    @file = File.new(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml')
+
+    @import = WordPressImport.new(:source => @file)
     @import.shop_url = 'localhost.myshopify.com'
-    @import.save
+    @import.save!    
   end
     
-  def test_saving_model_should_write_file_to_db
-    @data = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml')
-    @original_data = @data.read
-    @new_import = WordPressImport.new( :content => @original_data)
-    @new_import.save
-
-    assert_equal @original_data, @new_import.content
-  end
-  
   def test_should_be_able_to_add_and_guess
     hashes = [@import.adds, @import.guesses]
     
@@ -30,7 +23,7 @@ class ImportTest < ActiveSupport::TestCase
 
     @import.guessed('post')
     @import.guessed('page')
-    @import.content = 't'
+    @import.source = 't'
     @import.save
 
     [@import.reload.adds, @import.guesses].each do |hash|
@@ -41,13 +34,13 @@ class ImportTest < ActiveSupport::TestCase
     assert @import.save
   end
     
-  def test_should_not_allow_creation_of_import_without_content
+  def test_should_not_allow_creation_of_import_without_source
     @import = WordPressImport.new
     assert !@import.save
   end
   
   def test_should_not_save_without_site
-    @import = WordPressImport.new( :content => "meaningless" )
+    @import = WordPressImport.new( :source => File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml') )
     assert !@import.save
     
     @import.shop_url = "http://testing.com"
@@ -74,7 +67,7 @@ class ImportTest < ActiveSupport::TestCase
   end
     
   def test_shop_url_should_be_protected
-    @import = WordPressImport.new(:shop_url => 'test', :content => 'test')
+    @import = WordPressImport.new(:shop_url => 'test', :source => @file)
     assert !@import.save
     
     @import.shop_url = 'test'
@@ -82,25 +75,25 @@ class ImportTest < ActiveSupport::TestCase
   end
   
   def test_adds_should_have_sensible_default
-    @import = WordPressImport.new(:shop_url => 'test', :content => 'test')
+    @import = WordPressImport.new(:shop_url => 'test', :source => @file)
     @import.shop_url = 'test'
     assert @import.save
     assert_equal(Hash.new, @import.adds)
     assert_equal(Hash.new, @import.guesses)
   end
   
-  def test_delete_content_after_finished
-    @import = WordPressImport.new(:shop_url => 'test', :content => 'test')
+  def test_delete_source_after_finished
+    @import = WordPressImport.new(:shop_url => 'test', :source => @file)
     @import.shop_url = 'test'
     assert @import.save
     
     assert !@import.finished?
-    assert @import.content
+    assert @import.source.exists?
     
     @import.finish_time = Time.now
     @import.save!
     
     assert @import.finished?
-    assert_nil @import.reload.content
+    assert !@import.reload.source.exists?
   end
 end

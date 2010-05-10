@@ -3,7 +3,7 @@ require 'test_helper'
 class WordPressImportTest < ActiveSupport::TestCase
 
   def setup
-    @import = WordPressImport.new(:content => File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml').read)
+    @import = WordPressImport.new(:source => File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml'))
     @import.shop_url = 'localhost.myshopify.com'
     assert @import.save    
   end
@@ -16,11 +16,11 @@ class WordPressImportTest < ActiveSupport::TestCase
     assert_equal 'http://localhost/wordpress', @import.original_url
   end
   
-  def test_should_not_create_import_wihtout_content
+  def test_should_not_create_import_wihtout_source
     @new_import = WordPressImport.new
     assert !@new_import.save
     
-    @new_import.content = 'test'
+    @new_import.source = 'test'
     @new_import.save
   end
   
@@ -50,7 +50,8 @@ class WordPressImportTest < ActiveSupport::TestCase
     ShopifyAPI::Blog.any_instance.expects(:save).times(1)
     
     assert @import.execute!('localhost', 'bill@bob.com')
-    assert @import.save
+    @import.save
+    puts @import.errors.full_messages
   end
   
   def test_should_add_default_email_to_comments_if_missing

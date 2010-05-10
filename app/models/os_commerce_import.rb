@@ -35,12 +35,11 @@ class Array
 end
 
 class OsCommerceImport < Import
+  validate_on_create :has_source
 
   validates_presence_of :base_url
-  validates_presence_of  :content, :on => :create      # must have content just on creation of import
-
   def guess
-    rows = parse_content(content)
+    rows = parse_content(source.to_file.read)
     
     rows.each_with_index do |row, index|
       store_property_values(row) if index == 0
@@ -49,7 +48,7 @@ class OsCommerceImport < Import
   end
   
   def parse  
-    rows = parse_content(content)
+    rows = parse_content(source.to_file.read)
     
     rows.each_with_index do |row, index|
       store_property_values(row) if index == 0

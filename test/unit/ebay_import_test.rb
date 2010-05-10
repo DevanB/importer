@@ -4,9 +4,9 @@ class EbayImportTest < ActiveSupport::TestCase
   def setup
     @import = EbayImport.new
 
-    @import.content = "Somethin'"
     @import.shop_url = 'shopify.myshopify.com'
-    assert @import.save
+@import.save!
+# puts @import.errors.full_messages
   end
   
   test "execute should run everything" do

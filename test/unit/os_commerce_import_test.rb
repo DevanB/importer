@@ -5,10 +5,10 @@ class OsCommerceImportTest < ActiveSupport::TestCase
   def setup
     @import = OsCommerceImport.new    
 
-    @import.content = File.open(File.dirname(__FILE__) + '/../fixtures/files/os_commerce/import.csv').read
+    @import.source = File.open(File.dirname(__FILE__) + '/../fixtures/files/os_commerce/import.csv')
     @import.base_url = 'http://demo.oscommerce.com'
     @import.shop_url = 'jessetesting.myshopify.com'
-    @import.save    
+    @import.save!    
   end
 
   def test_parse
@@ -24,11 +24,11 @@ class OsCommerceImportTest < ActiveSupport::TestCase
     assert_equal 27, @import.guesses['product']
   end
   
-  def test_should_not_create_import_wihtout_content
+  def test_should_not_create_import_wihtout_source
     @new_import = OsCommerceImport.new
     assert !@new_import.save
     
-    @new_import.content = 'test'
+    @new_import.source = 'test'
     @new_import.save
   end
 end

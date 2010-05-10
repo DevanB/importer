@@ -36,11 +36,18 @@ class Import < ActiveRecord::Base
   serialize :import_errors, Array
   
   has_attached_file :source, 
-                    :storage => Rails.env.production? || Rails.env.staging? ? :s3 : :filesystem,
+                    :storage => Rails.env.production? ? :s3 : :filesystem,
                     :s3_credentials => "#{RAILS_ROOT}/config/s3.yml",
                     :s3_permissions => :private,
-                    :path => "imports/:id.:extension",
+                    :path => Rails.env.production? ? "imports/:id.:extension" : ":rails_root/public/system/imports/:id/:basename.:extension",
                     :bucket => 'shopify-importer'
+                    
+  
+  def has_source
+    unless source.file?
+      errors.add_to_base 'The :source must be set'
+    end
+  end
   
   def init_serials
     self.import_errors = []

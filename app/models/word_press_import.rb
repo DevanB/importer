@@ -22,6 +22,8 @@ require 'nokogiri'
 require 'open-uri'
 
 class WordPressImport < Import
+  validate_on_create :has_source
+  
   def blog_title
     @blog_title ||= xml.xpath('rss/channel/title').first.text    
   end
