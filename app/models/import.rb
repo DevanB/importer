@@ -22,6 +22,7 @@
 require 'csv'
 require 'net/http'
 require 'uri'
+require 'paperclip'
 
 class Import < ActiveRecord::Base
   
@@ -34,29 +35,17 @@ class Import < ActiveRecord::Base
   serialize :guesses, Hash  
   serialize :import_errors, Array
   
+  has_attached_file :source, 
+                    :storage => Rails.env.production? || Rails.env.staging? ? :s3 : :filesystem,
+                    :s3_credentials => "#{RAILS_ROOT}/config/s3.yml",
+                    :s3_permissions => :private,
+                    :path => "imports/:id.:extension",
+                    :bucket => 'shopify-importer'
+  
   def init_serials
     self.import_errors = []
     self.adds = {}
     self.guesses = {}
-  end
-  
-  def source=(file_data)
-    @file_data = file_data
-  end
-  
-  def write_file
-    if @file_data && !@file_data.blank?
-      content = @file_data.read 
-      
-      # Gets rid of a REXML exception, in my experience, this tag is always empty
-      content.gsub!('<excerpt:encoded><![CDATA[]]></excerpt:encoded>', '')
-      content.gsub!(/^.*atom:link.*$/, '')
-      
-      utf8_content = Iconv.iconv("UTF-8", "ISO-8859-1", content).first 
-      self.content = utf8_content
-    else
-      nil
-    end
   end
   
   def added(type)
@@ -170,10 +159,10 @@ class Import < ActiveRecord::Base
   def guess 
   end
   
-  before_save :delete_content_if_finished
-  def delete_content_if_finished
-    if finished? && content.present? && import_errors.blank?
-      update_attribute :content, nil
+  before_save :delete_source_if_finished
+  def delete_source_if_finished
+    if finished? && source.exists? && import_errors.blank?
+      update_attribute :source, nil
     end
   end
 end

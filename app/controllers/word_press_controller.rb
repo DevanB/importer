@@ -14,20 +14,12 @@ class WordPressController < ApplicationController
       @import = WordPressImport.new(params[:import])
       @import.shop_url = current_shop.url
 
-      flash[:error] = "Error importing your blog. Wrong file type." unless @import.write_file
       if @import.save
         @import.guess
       else
-        flash[:error] = "Error importing your blog." unless flash[:error]
+        flash[:error] = "Error importing your blog."
         render :action => "new"
       end
-
-    rescue NameError => e
-      flash[:error] = "There was an error parsing your input file."
-      render :action => "new"
-    rescue REXML::ParseException => e
-      flash[:error] = "Error importing blog. Your file is not valid XML."      
-      render :action => "new"
     end
   end
 
