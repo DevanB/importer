@@ -40,3 +40,7 @@ Rails::Initializer.run do |config|
 end
 
 ExceptionNotifier.exception_recipients = [ENV['exception_recipients']]
+
+# not sure why I have to do this...
+require 'xml/libxml'
+XML::Parser = LibXML::XML::Parser unless defined? XML::Parser
