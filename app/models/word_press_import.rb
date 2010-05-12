@@ -18,26 +18,30 @@
 #  import_errors   :text
 #  ebay_account_id :integer(11)
 #
+require 'nokogiri'
+require 'open-uri'
 
 class WordPressImport < Import
+  validate_on_create :has_source
   
-  validates_presence_of  :content, :on => :create      # must have content just on creation of import
-
   def blog_title
-    @blog_title ||= REXML::XPath.match(xml, 'rss/channel/title').first.text    
+    @blog_title ||= xml.xpath('rss/channel/title').first.text    
   end
   
   def original_url
-    @original_url ||= REXML::XPath.match(xml, 'rss/channel/link').first.text
+    @original_url ||= xml.xpath('rss/channel/link').first.text
   end
     
   def guess
     # Loop through each <item> tag in the file
-    REXML::XPath.match(xml, 'rss/channel/item').each do |node|
-      status = node.elements.select {|e| e.name == "status" }.first.text
-      comments = node.elements.select {|e| e.name == "comment" }
+    xml.xpath('rss/channel/item').each do |node|
+      status_node = node.children.select {|e| e.name == "status" }.first
+      next unless status_node
       
-      case node.elements.find {|e| e.name == "post_type" }.text
+      status = status_node.text
+      comments = node.children.select {|e| e.name == "comment" }
+      
+      case node.children.find {|e| e.name == "post_type" }.text
       when 'page'
         self.guessed('page')
       when 'post'
@@ -46,14 +50,20 @@ class WordPressImport < Import
       end      
     end
     
-  rescue REXML::ParseException => e
+  rescue Nokogiri::SyntaxError => e
     self.import_errors << e.message
   end
     
   def parse
     # Loop through each <item> tag in the file
-    REXML::XPath.match(xml, 'rss/channel/item').each do |node|
-      case node.elements.find {|e| e.name == "post_type" }.text
+    xml.xpath('rss/channel/item').each do |node|
+      status_node = node.children.select {|e| e.name == "status" }.first
+      next unless status_node
+
+      post_type_node = node.children.find {|e| e.name == "post_type" }
+      next unless post_type_node
+      
+      case post_type_node.text
       when 'page'
         add_page(node)
       when 'post'
@@ -99,7 +109,7 @@ class WordPressImport < Import
   
   private  
   def xml
-    @xml ||= REXML::Document.new(self.content.gsub(' & ', ' &amp; '))    
+    @xml ||= Nokogiri::XML(self.source.to_file.read.gsub(' & ', ' &amp; '))
   end
   
   def pages
@@ -134,7 +144,7 @@ class WordPressImport < Import
       articles << article
     end
     
-    add_comments(node.elements.select {|e| e.name == "comment" } , article)
+    add_comments(node.children.select {|e| e.name == "comment" } , article)
   end
   
   def add_comments(nodes, article)
@@ -145,12 +155,12 @@ class WordPressImport < Import
       comment_string = comment_node.to_s.gsub('<wp:comment>', "<wp:comment xmlns:wp='http://wordpress.org/export/1.0/'>")
 
       # New XML doc starting at the root of the comment
-      @comment_root_node = REXML::Document.new(comment_string).elements[1]
+      @comment_root_node = Nokogiri::XML(comment_string).children.first
 
-      author = @comment_root_node.elements.select { |e| e.name == "comment_author" }.first.text
-      email = @comment_root_node.elements.select { |e| e.name == "comment_author_email" }.first.text
-      body = @comment_root_node.elements.select { |e| e.name == "comment_content" }.first.text
-      pub_date = @comment_root_node.elements.select { |e| e.name == "comment_date" }.first.text
+      author = @comment_root_node.children.select { |e| e.name == "comment_author" }.first.text
+      email = @comment_root_node.children.select { |e| e.name == "comment_author_email" }.first.text
+      body = @comment_root_node.children.select { |e| e.name == "comment_content" }.first.text
+      pub_date = @comment_root_node.children.select { |e| e.name == "comment_date" }.first.text
       
       email = 'blank@blank.com' if email.blank?
 
@@ -159,10 +169,10 @@ class WordPressImport < Import
   end
   
   def get_attributes(node)
-    @status = node.elements.select {|e| e.name == "status" }.first.text
-    @title = node.elements["title"].text
-    @body = node.elements.select {|e| e.name == "encoded" }.first.text
-    @pub_date = DateTime.parse(node.elements.find {|e| e.name == "post_date" }.text).strftime('%F %T') if @status == 'publish'
-    @author = node.elements.find {|e| e.name == "creator" }.text
+    @status = node.children.select {|e| e.name == "status" }.first.text
+    @title = node.children.select {|e| e.name == "title" }.first.text
+    @body = node.children.select {|e| e.name == "encoded" }.first.text
+    @pub_date = DateTime.parse(node.children.find {|e| e.name == "post_date" }.text).strftime('%F %T') if @status == 'publish'
+    @author = node.children.find {|e| e.name == "creator" }.text
   end
 end

@@ -17,11 +17,16 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
     assert_template 'index'
     
-    get :summary, :id => imports(:word_press)
+    @import = WordPressImport.new
+    @import.shop_url = 'jessetesting.myshopify.com'
+    @import.source = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml')
+    assert @import.save
+    
+    get :summary, :id => @import.id
     assert_response :success
     assert_template 'summary'
     
     assert @import = assigns(:import)
-    assert_equal imports(:word_press).id, @import.id
+    assert_equal @import.id, @import.id
   end
 end

@@ -15,7 +15,7 @@ class OsCommerceControllerTest < ActionController::TestCase
     @import = OsCommerceImport.new
     @import.base_url = 'http://demo.oscommerce.com'
     @import.shop_url = 'jessetesting.myshopify.com'
-    @import.content = File.open(File.dirname(__FILE__) + '/../fixtures/files/os_commerce/import.csv').read
+    @import.source = File.open(File.dirname(__FILE__) + '/../fixtures/files/os_commerce/import.csv')
     assert @import.save
   end
 

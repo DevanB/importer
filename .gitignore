@@ -26,6 +26,7 @@ tmp/*
 
 # no local theme / product images either
 public/files
+public/system
 private/files
 
 *.orig

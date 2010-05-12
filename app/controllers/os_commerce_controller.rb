@@ -16,8 +16,6 @@ class OsCommerceController < ApplicationController
       @import = OsCommerceImport.new(params[:import])
       @import.shop_url = current_shop.url
 
-      flash[:error] = "Error importing your shop. Wrong file type or corrupt file." if not @import.write_file
-      
       if @import.save
         @import.guess
       else

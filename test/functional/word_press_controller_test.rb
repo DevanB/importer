@@ -18,7 +18,7 @@ class WordPressControllerTest < ActionController::TestCase
     
     @import = WordPressImport.new
     @import.shop_url = 'jessetesting.myshopify.com'
-    @import.content = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml').read
+    @import.source = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import.xml')
     assert @import.save
   end
      
@@ -75,7 +75,7 @@ class WordPressControllerTest < ActionController::TestCase
   end
 
   def test_import_failing_with_invalid_xml_over_html
-    @import.content = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import_typo.xml').read
+    @import.source = File.open(File.dirname(__FILE__) + '/../fixtures/files/word_press/word_press_import_typo.xml').read
     @import.save
     post :import, :id => @import.id, :format => 'html'
 
