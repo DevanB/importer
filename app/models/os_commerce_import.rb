@@ -81,7 +81,7 @@ class OsCommerceImport < Import
     
     builders << ProductBuilder.new({ 
       :title => @title, 
-      :body => @description, 
+      :body_html => @description, 
       :vendor => @vendor , 
       :product_type => @product_type || 'Blank', 
       :variants => add_variants(row),

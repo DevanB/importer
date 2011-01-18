@@ -130,17 +130,17 @@ class WordPressImport < Import
   
   def add_page(node)
     get_attributes(node)    
-    pages << ShopifyAPI::Page.new( :title => @title, :body => @body, :author => @author, :published_at => @pub_date )
+    pages << ShopifyAPI::Page.new( :title => @title, :body_html => @body, :author => @author, :published_at => @pub_date )
   end
   
   def add_article(node)
     get_attributes(node)
     
     if @status == 'publish'
-      article = ShopifyAPI::Article.new( :title => @title, :body => @body, :author => @author, :published_at => @pub_date )
+      article = ShopifyAPI::Article.new( :title => @title, :body_html => @body, :author => @author, :published_at => @pub_date )
       articles << article
     elsif @status == 'draft'
-      article = ShopifyAPI::Article.new( :title => @title, :body => @body, :author => @author, :published_at => 0 )
+      article = ShopifyAPI::Article.new( :title => @title, :body_html => @body, :author => @author, :published_at => 0 )
       articles << article
     end
     
@@ -164,7 +164,7 @@ class WordPressImport < Import
       
       email = 'blank@blank.com' if email.blank?
 
-      comments[ShopifyAPI::Comment.new( :body => body, :author => author, :email => email, :published_at => pub_date )] = article
+      comments[ShopifyAPI::Comment.new( :body_html => body, :author => author, :email => email, :published_at => pub_date )] = article
     end    
   end
   

@@ -25,7 +25,7 @@ class EbayImport < Import
   def build_item(item)
     builder = ProductBuilder.new(
       :title => item.title,
-      :body => "<notextile>#{EbayImport.get_item_description(item)}</notextile>",
+      :body_html => "<notextile>#{EbayImport.get_item_description(item)}</notextile>",
       :vendor => 'None provided',
       :product_type => (item.primary_category.category_name.split(/[,:]/).first || 'None provided'),
       :tags => item.primary_category.category_name.split(/[,:]/).join(","),
